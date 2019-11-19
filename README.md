@@ -2,7 +2,7 @@
 
 This repo contains a Processing sketch for the 2019 Silicon Block installation.
 
-![img](https://i.imgur.com/KK7aJ8y.jpg)
+![img](https://i.imgur.com/PfLDygL.jpg)
 
 ## Requirements
 
