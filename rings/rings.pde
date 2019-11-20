@@ -17,11 +17,13 @@ float startRadius;
 float stopDeg;
 float stopRadius;
 int endColour;
+int FPS;
 int startColour;
 PFont font;
 PShape logo;
 SimpleDateFormat format;
 String dateFormat;
+String endTime;
 String hourFormat;
 String startTime;
 
@@ -45,14 +47,14 @@ void setup() {
   
   // Load assets
   font = loadFont("OpenSans-24.vlw");
-  logo = loadShape("sbp.svg");
+  logo = loadShape("sbb.svg");
   
   // Date/time stuff
   calendar = Calendar.getInstance();
   dateFormat = "yyyy-MM-dd@HH-mm-ss";
   hourFormat = "HH:mm";
   format = new SimpleDateFormat( dateFormat );
-  startTime = new SimpleDateFormat( hourFormat ).format(new Date());
+  startTime = "14:00";
   
   // Colours
   startColour = 0xff3e2e86;
@@ -60,22 +62,53 @@ void setup() {
   
   // Constraints
   shouldStop = false;
-  startRadius = 0.4;
-  stopRadius = ((height / 2) - 40);
+  startRadius = 0.1;
+  stopRadius = ((height / 2) - 120);
   stopDeg = 0.0;
   
   // Frame rate
-  frameRate(15);
+  FPS = 13;
+  frameRate(FPS);
+  calculateRunningTime();
+}
+
+void calculateRunningTime() {
+  boolean isRunning = true;
+  float radius = startRadius;
+  float alpha = 0;
+  int frames = 0;
+  
+  while (isRunning) {
+    float k = width/radius/compression;
+    alpha += radians(k);
+    radius += dist/(360/k);
+    
+    float angleDeg = degrees(alpha);
+    float actualDeg = angleDeg % 360;
+    frames++;
+    if (radius >= stopRadius && parseFloat(nf(actualDeg, 0, 1)) == stopDeg) {
+      isRunning = false;
+    }
+  }
+  
+  println(frames + " frames");
+  println(frames/FPS + " seconds");
+  println(frames/FPS/60 + " minutes");
+  println(frames/FPS/60/60 + " hours");
+  println("Resolution: " + width + " x " + height);
+  println("Radius: " + radius);
+  println("Diameter: " + radius*2);
 }
 
 void draw() {
   if (!shouldStop) {
     currentAmplitude = amplitude.analyze();
     points.add(currentAmplitude);
+    endTime = new SimpleDateFormat( hourFormat ).format(new Date());
   }
   
   background(0);
-  shape(logo, 80, 80, 266, 124);
+  shape(logo, 80, 88, 483, 52);
   noFill();
   strokeWeight(2);
   
@@ -83,6 +116,7 @@ void draw() {
   translate(width/2, height/2);
   rotate(radians(-90));
   beginShape();
+  
   float dir = 1;
   float radius = startRadius;
   float alpha = 0;
@@ -91,6 +125,7 @@ void draw() {
     dir *= -1;
     float volume = (points.get(i) * amplitudeMultiplier) * dir;
     float k = width/radius/compression;
+    
     alpha += radians(k);
     radius += dist/(360/k);
     
@@ -104,9 +139,10 @@ void draw() {
     } else {
       stroke(lerpColor(endColour, startColour, map(actualDeg, 180, 360, 0, 1)));
     }
+    
     vertex(cx, cy);
+    
     if (radius >= stopRadius && parseFloat(nf(actualDeg, 0, 1)) == stopDeg) {
-      println("STOPPING");
       shouldStop = true;
     }
   }
@@ -123,24 +159,24 @@ void draw() {
   text("Abbotsford Convent\n VIC, Australia", 0, 0);
   popMatrix();
   
-  String hour = new SimpleDateFormat( hourFormat ).format(new Date());
   pushMatrix();
   translate(width-80, height-90);
   textAlign(RIGHT, BOTTOM);
   textLeading(40);
-  text("21 July 2019\n" + startTime + "-" + hour, 0, 10);
+  text("21 November 2019\n" + startTime + "-" + endTime, 0, 10);
   popMatrix();
 }
 
 void keyPressed() {
   String filename = format.format(new Date());
-  saveData(filename);
   
   if (keyCode == ' ') {
+    saveData(filename);
     saveFrame(filename);
   }
   
   if (key == 'r') {
+    saveData(filename);
     saveFrame(filename);
     points = new ArrayList<Float>();
   }
