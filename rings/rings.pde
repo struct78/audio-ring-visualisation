@@ -23,6 +23,7 @@ PShape logo;
 SimpleDateFormat format;
 String dateFormat;
 String hourFormat;
+String startTime;
 
 void settings() {
   fullScreen(P3D);
@@ -40,17 +41,18 @@ void setup() {
   // Spiral properties
   points = new ArrayList<Float>();
   compression = 100;
-  dist = 4;
+  dist = 5;
   
   // Load assets
   font = loadFont("OpenSans-24.vlw");
   logo = loadShape("sbp.svg");
   
   // Date/time stuff
-  format = new SimpleDateFormat( dateFormat );
   calendar = Calendar.getInstance();
   dateFormat = "yyyy-MM-dd@HH-mm-ss";
   hourFormat = "HH:mm";
+  format = new SimpleDateFormat( dateFormat );
+  startTime = new SimpleDateFormat( hourFormat ).format(new Date());
   
   // Colours
   startColour = 0xff3e2e86;
@@ -63,7 +65,7 @@ void setup() {
   stopDeg = 0.0;
   
   // Frame rate
-  frameRate(60);
+  frameRate(15);
 }
 
 void draw() {
@@ -126,7 +128,7 @@ void draw() {
   translate(width-80, height-90);
   textAlign(RIGHT, BOTTOM);
   textLeading(40);
-  text("21 July 2019\n14:00-" + hour, 0, 10);
+  text("21 July 2019\n" + startTime + "-" + hour, 0, 10);
   popMatrix();
 }
 
