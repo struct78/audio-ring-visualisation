@@ -1,2 +1,3 @@
 *.tif
 *.csv
+.DS_Store
